@@ -95,7 +95,7 @@ public class ContactService
                 Id = 4,
                 Title = "Birthday Party",
                 Description = "Create unforgettable birthday memories with our customized decoration packages for all ages - from kids' themed parties to elegant adult celebrations.",
-                ImageUrl = "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800",
+                ImageUrl = "images/birthday-decoration-1.jpg",
                 Category = "Birthday",
                 Features = new List<string> 
                 { 

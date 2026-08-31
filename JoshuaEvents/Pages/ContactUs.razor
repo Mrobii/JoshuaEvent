@@ -1,7 +1,10 @@
 @page "/contactus"
 @using JoshuaEvents.Models
 @using JoshuaEvents.Services
+@using System.Text
+@using System.Text.Json
 @inject ContactService ContactService
+@inject HttpClient Http
 
 <PageTitle>Contact Us - Joshua Events</PageTitle>
 
@@ -182,7 +185,12 @@
             }
 
             contactQuery.SubmittedAt = DateTime.UtcNow;
+
+            // Save to local storage
             await ContactService.SaveQueryAsync(contactQuery);
+
+            // Send email notification using EmailJS
+            await SendEmailNotification();
 
             showSuccessMessage = true;
             contactQuery = new ContactQuery();
@@ -194,6 +202,43 @@
         finally
         {
             isSubmitting = false;
+        }
+    }
+
+    private async Task SendEmailNotification()
+    {
+        try
+        {
+            // Using Web3Forms - Free, no setup required
+            var formData = new Dictionary<string, string>
+            {
+                { "access_key", "081e2980-fb6d-4abd-a432-2fe4e391e883" }, // Your Web3Forms access key
+                { "subject", $"New Enquiry from {contactQuery.Name} - Joshua Events" },
+                { "from_name", contactQuery.Name },
+                { "email", "imobi4u@gmail.com" }, // Your email where you'll receive notifications
+                { "Customer_Name", contactQuery.Name },
+                { "Customer_Email", contactQuery.Email },
+                { "Customer_Phone", contactQuery.Phone },
+                { "Event_Type", contactQuery.EventType },
+                { "Event_Date", contactQuery.EventDate?.ToString("dd MMM yyyy") ?? "Not specified" },
+                { "Guest_Count", contactQuery.GuestCount > 0 ? contactQuery.GuestCount.ToString() : "Not specified" },
+                { "Budget", contactQuery.Budget > 0 ? $"₹{contactQuery.Budget:N0}" : "Not specified" },
+                { "Message", contactQuery.Message ?? "No additional message" }
+            };
+
+            var content = new FormUrlEncodedContent(formData);
+            var response = await Http.PostAsync("https://api.web3forms.com/submit", content);
+
+            // Log success/failure (optional)
+            if (response.IsSuccessStatusCode)
+            {
+                System.Diagnostics.Debug.WriteLine("Email sent successfully!");
+            }
+        }
+        catch
+        {
+            // Email sending failed but form is still saved locally
+            // Don't show error to user as the main function (saving query) succeeded
         }
     }
 }

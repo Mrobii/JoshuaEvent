@@ -7,6 +7,9 @@ public class ContactQuery
     public string Email { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
     public string EventType { get; set; } = string.Empty;
+    public DateTime? EventDate { get; set; }
+    public int GuestCount { get; set; }
+    public decimal Budget { get; set; }
     public string Message { get; set; } = string.Empty;
     public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
 }
