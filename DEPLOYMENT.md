@@ -4,21 +4,22 @@
 
 **Joshua Events** is a modern Blazor WebAssembly event decoration services website with database-free photo management using localStorage, ready to deploy to any static hosting platform like GitHub Pages.
 
+**Your Repository**: https://github.com/Mrobii/JoshuaEvent-s  
+**Your Live URL** (after deployment): https://mrobii.github.io/JoshuaEvent-s/
+
 ---
 
 ## Quick Deploy to GitHub Pages (5 Minutes)
 
 ### Step 1: Create GitHub Repository
 ```bash
-# Initialize git if not already done
-git init
-git add .
-git commit -m "Initial commit - Joshua Events website"
+# Your repository already exists at:
+# https://github.com/Mrobii/JoshuaEvent-s
 
-# Create repository on GitHub.com then:
-git remote add origin https://github.com/YOUR_USERNAME/JoshuaEvents.git
-git branch -M main
-git push -u origin main
+# Push your latest changes
+git add .
+git commit -m "Add deployment configuration and photo management features"
+git push origin master
 ```
 
 ### Step 2: Build for Production
@@ -70,7 +71,7 @@ jobs:
 
 Your site will be live at:
 ```
-https://YOUR_USERNAME.github.io/JoshuaEvents/
+https://mrobii.github.io/JoshuaEvent-s/
 ```
 
 ---
