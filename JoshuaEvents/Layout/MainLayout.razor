@@ -1,0 +1,57 @@
+﻿@inherits LayoutComponentBase
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <a href="tel:9036215569" class="contact-link">
+                <i class="bi bi-telephone-fill"></i> Call: 9036215569
+            </a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+
+        <footer class="app-footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="images/joshua-logo.svg" alt="Joshua Events" style="width: 60px; height: 60px; background: white; border-radius: 50%; padding: 5px; margin-right: 15px;" />
+                            <div>
+                                <h5 class="mb-0">JOSHUA EVENTS</h5>
+                                <small>Create • Plan • Celebrate</small>
+                            </div>
+                        </div>
+                        <p>We Create Moments You'll Cherish Forever</p>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <h5 class="mb-3">Quick Links</h5>
+                        <ul class="footer-links">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/events">Our Services</a></li>
+                            <li><a href="/gallery">Gallery</a></li>
+                            <li><a href="/contactus">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <h5 class="mb-3">Contact Info</h5>
+                        <p><i class="bi bi-telephone-fill"></i> <a href="tel:9036215569">9036215569</a></p>
+                        <p><i class="bi bi-envelope-fill"></i> info@joshuaevents.com</p>
+                        <p class="mb-1"><i class="bi bi-geo-alt-fill"></i> <strong>Office Address:</strong></p>
+                        <p class="ms-4 mb-0">Near Zion Methodist Church,<br />
+                        Zion Colony, Kumbarwada Road,<br />
+                        Bidar - 585403 (K.S)</p>
+                    </div>
+                </div>
+                <hr />
+                <div class="text-center">
+                    <p class="mb-0">&copy; @DateTime.Now.Year Joshua Events. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+</div>

@@ -1,0 +1,199 @@
+@page "/contactus"
+@using JoshuaEvents.Models
+@using JoshuaEvents.Services
+@inject ContactService ContactService
+
+<PageTitle>Contact Us - Joshua Events</PageTitle>
+
+<div class="contact-container">
+    <section class="page-header">
+        <div class="container">
+            <h1>Get in Touch</h1>
+            <p class="lead">Let's discuss your event decoration needs</p>
+        </div>
+    </section>
+
+    <div class="container my-5">
+        <div class="row g-5">
+            <div class="col-lg-6">
+                <div class="contact-info-section">
+                    <h3 class="mb-4">We'd Love to Hear From You</h3>
+                    <p class="mb-4">
+                        At Joshua Events, we believe every celebration deserves to be extraordinary. 
+                        Share your vision with us, and our team will bring it to life with creativity and precision.
+                    </p>
+                    <p class="mb-4 fw-bold" style="color: #667eea; font-size: 1.1rem;">
+                        "CREATE • PLAN • CELEBRATE" - We Create Moments You'll Cherish Forever
+                    </p>
+
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="bi bi-telephone-fill"></i>
+                            </div>
+                            <div>
+                                <h5>Phone</h5>
+                                <p><a href="tel:9036215569" class="text-decoration-none">9036215569</a></p>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="bi bi-envelope-fill"></i>
+                            </div>
+                            <div>
+                                <h5>Email</h5>
+                                <p>info@joshuaevents.com</p>
+                                <p>bookings@joshuaevents.com</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </div>
+                            <div>
+                                <h5>Office Address</h5>
+                                <p>Near Zion Methodist Church,<br />
+                                Zion Colony, Kumbarwada Road,<br />
+                                Bidar - 585403 (Karnataka)</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="bi bi-clock-fill"></i>
+                            </div>
+                            <div>
+                                <h5>Working Hours</h5>
+                                <p>Monday - Saturday: 9:00 AM - 8:00 PM<br />Sunday: 10:00 AM - 6:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="contact-form-section">
+                    <h3 class="mb-4">Send Us Your Inquiry</h3>
+
+                    @if (showSuccessMessage)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            Thank you for contacting us! We'll get back to you within 24 hours.
+                            <button type="button" class="btn-close" @onclick="() => showSuccessMessage = false"></button>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            @errorMessage
+                            <button type="button" class="btn-close" @onclick="() => errorMessage = string.Empty"></button>
+                        </div>
+                    }
+
+                    <EditForm Model="contactQuery" OnValidSubmit="HandleSubmit">
+                        <DataAnnotationsValidator />
+
+                        <div class="mb-3">
+                            <label class="form-label">Your Name <span class="text-danger">*</span></label>
+                            <InputText class="form-control" @bind-Value="contactQuery.Name" placeholder="Enter your full name" />
+                            <ValidationMessage For="() => contactQuery.Name" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <InputText type="email" class="form-control" @bind-Value="contactQuery.Email" placeholder="your.email@example.com" />
+                            <ValidationMessage For="() => contactQuery.Email" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                            <InputText class="form-control" @bind-Value="contactQuery.Phone" placeholder="+91 98765 43210" />
+                            <ValidationMessage For="() => contactQuery.Phone" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Event Type <span class="text-danger">*</span></label>
+                            <InputSelect class="form-select" @bind-Value="contactQuery.EventType">
+                                <option value="">-- Select Event Type --</option>
+                                <option value="Marriage">Marriage / Wedding</option>
+                                <option value="Haldi Ceremony">Haldi Ceremony</option>
+                                <option value="Cradle Ceremony">Cradle Ceremony</option>
+                                <option value="Birthday Party">Birthday Party</option>
+                                <option value="Corporate Event">Corporate Event</option>
+                                <option value="Anniversary">Anniversary Celebration</option>
+                                <option value="Engagement">Engagement Ceremony</option>
+                                <option value="Baby Shower">Baby Shower</option>
+                                <option value="Other">Other</option>
+                            </InputSelect>
+                            <ValidationMessage For="() => contactQuery.EventType" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Your Message</label>
+                            <InputTextArea class="form-control" @bind-Value="contactQuery.Message" rows="4" 
+                                placeholder="Tell us about your event requirements, date, location, number of guests, etc." />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100" disabled="@isSubmitting">
+                            @if (isSubmitting)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                <span>Sending...</span>
+                            }
+                            else
+                            {
+                                <span>Send Inquiry</span>
+                            }
+                        </button>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private ContactQuery contactQuery = new();
+    private bool isSubmitting = false;
+    private bool showSuccessMessage = false;
+    private string errorMessage = string.Empty;
+
+    private async Task HandleSubmit()
+    {
+        isSubmitting = true;
+        errorMessage = string.Empty;
+        showSuccessMessage = false;
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(contactQuery.Name) ||
+                string.IsNullOrWhiteSpace(contactQuery.Email) ||
+                string.IsNullOrWhiteSpace(contactQuery.Phone) ||
+                string.IsNullOrWhiteSpace(contactQuery.EventType))
+            {
+                errorMessage = "Please fill in all required fields.";
+                isSubmitting = false;
+                return;
+            }
+
+            contactQuery.SubmittedAt = DateTime.UtcNow;
+            await ContactService.SaveQueryAsync(contactQuery);
+
+            showSuccessMessage = true;
+            contactQuery = new ContactQuery();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An error occurred while submitting your inquiry. Please try again.";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}

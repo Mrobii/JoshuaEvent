@@ -1,0 +1,55 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="">
+            <img src="images/joshua-logo.svg" alt="Joshua Events" class="navbar-logo" />
+            <div class="brand-text">
+                <div class="brand-name">JOSHUA EVENTS</div>
+                <div class="brand-tagline">Create • Plan • Celebrate</div>
+            </div>
+        </a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="nav flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="events">
+                <span class="bi bi-calendar-event-fill" aria-hidden="true"></span> Our Services
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="gallery">
+                <span class="bi bi-images" aria-hidden="true"></span> Gallery
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="addphotos">
+                <span class="bi bi-cloud-upload" aria-hidden="true"></span> Add Photos
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="contactus">
+                <span class="bi bi-envelope-fill" aria-hidden="true"></span> Contact Us
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

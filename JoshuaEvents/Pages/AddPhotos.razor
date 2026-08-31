@@ -1,0 +1,353 @@
+@page "/addphotos"
+@using JoshuaEvents.Models
+@using JoshuaEvents.Services
+@inject PhotoService PhotoService
+@inject NavigationManager Navigation
+
+<PageTitle>Add Photos - Joshua Events Admin</PageTitle>
+
+<div class="add-photos-container">
+    <div class="page-header">
+        <div class="container">
+            <h1>📸 Add Event Photos</h1>
+            <p class="lead">Upload and manage your event gallery images</p>
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+
+                <!-- Upload Method Tabs -->
+                <div class="upload-tabs mb-4">
+                    <button class="tab-btn @(uploadMethod == "file" ? "active" : "")" @onclick='() => uploadMethod = "file"'>
+                        <i class="bi bi-upload"></i> Upload File
+                    </button>
+                    <button class="tab-btn @(uploadMethod == "url" ? "active" : "")" @onclick='() => uploadMethod = "url"'>
+                        <i class="bi bi-link-45deg"></i> Image URL
+                    </button>
+                </div>
+
+                <div class="upload-card">
+                    <div class="upload-header">
+                        <h3>@(uploadMethod == "file" ? "Upload Photo File" : "Add Photo URL")</h3>
+                        <p>@(uploadMethod == "file" ? "Select an image file from your computer (Max 5MB)" : "Paste a URL to an online image")</p>
+                    </div>
+
+                    @if (showSuccessMessage)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            Photo uploaded successfully!
+                            <button type="button" class="btn-close" @onclick="() => showSuccessMessage = false"></button>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            @errorMessage
+                            <button type="button" class="btn-close" @onclick="() => errorMessage = string.Empty"></button>
+                        </div>
+                    }
+
+                    <EditForm Model="newPhoto" OnValidSubmit="HandleUpload">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Photo Title <span class="text-danger">*</span></label>
+                            <InputText class="form-control form-control-lg" @bind-Value="newPhoto.Title" 
+                                       placeholder="e.g., Beautiful Wedding Mandap Setup" />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Description</label>
+                            <InputTextArea class="form-control" @bind-Value="newPhoto.Description" rows="3"
+                                           placeholder="Add a description for this photo..." />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Event Type <span class="text-danger">*</span></label>
+                            <InputSelect class="form-select form-select-lg" @bind-Value="newPhoto.EventType">
+                                <option value="">-- Select Event Type --</option>
+                                <option value="Wedding">Wedding</option>
+                                <option value="Engagement">Engagement</option>
+                                <option value="Haldi">Haldi Ceremony</option>
+                                <option value="Cradle">Cradle Ceremony</option>
+                                <option value="Naming">Naming Ceremony</option>
+                                <option value="Birthday">Birthday Party</option>
+                                <option value="Corporate">Corporate Event</option>
+                                <option value="Social">Social Gathering</option>
+                                <option value="Anniversary">Anniversary</option>
+                                <option value="Mehendi">Mehendi Function</option>
+                            </InputSelect>
+                        </div>
+
+                        @if (uploadMethod == "file")
+                        {
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Select Image File <span class="text-danger">*</span></label>
+                                <div class="file-upload-wrapper">
+                                    <input type="file" 
+                                           id="photoFileInput" 
+                                           class="form-control form-control-lg" 
+                                           accept="image/*" 
+                                           @onchange="HandleFileSelected" />
+                                    <small class="form-text text-muted">
+                                        <i class="bi bi-info-circle"></i> Supported: JPG, PNG, GIF • Max size: 5MB
+                                    </small>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Image URL <span class="text-danger">*</span></label>
+                                <InputText class="form-control form-control-lg" @bind-Value="newPhoto.ImageUrl" 
+                                           placeholder="Paste image URL (e.g., https://example.com/image.jpg)" />
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i> You can use image URLs from Unsplash, Imgur, or your own hosting
+                                </div>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(previewUrl))
+                        {
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Image Preview</label>
+                                <div class="image-preview">
+                                    <img src="@previewUrl" alt="Preview" class="img-fluid rounded" 
+                                         style="max-height: 400px; object-fit: cover;" 
+                                         @onerror="HandleImageError" />
+                                </div>
+                            </div>
+                        }
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg" disabled="@isUploading">
+                                @if (isUploading)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    <span>Uploading...</span>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-cloud-upload me-2"></i>
+                                    <span>Upload Photo</span>
+                                }
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" @onclick="ViewGallery">
+                                <i class="bi bi-images me-2"></i>
+                                View Gallery
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+
+                <!-- Storage Management -->
+                <div class="storage-info mt-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-database"></i> Storage Information
+                            </h5>
+                            <p class="mb-2"><strong>Total Photos:</strong> @recentPhotos.Count</p>
+                            <p class="mb-3"><small class="text-muted">Photos are stored in your browser's local storage</small></p>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" @onclick="ExportPhotos">
+                                    <i class="bi bi-download"></i> Export Data
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" @onclick="() => showImportDialog = true">
+                                    <i class="bi bi-upload"></i> Import Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (showImportDialog)
+                {
+                    <div class="import-dialog mt-3">
+                        <div class="card border-success">
+                            <div class="card-body">
+                                <h6>Import Photos Data</h6>
+                                <input type="file" id="importFileInput" class="form-control mb-2" accept=".json" />
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-success" @onclick="ImportPhotos">Import</button>
+                                    <button class="btn btn-sm btn-secondary" @onclick="() => showImportDialog = false">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (recentPhotos.Any())
+                {
+                    <div class="recent-uploads mt-5">
+                        <h4 class="mb-4">
+                            <i class="bi bi-clock-history me-2"></i>
+                            Recently Uploaded (@recentPhotos.Count)
+                        </h4>
+                        <div class="row g-3">
+                            @foreach (var photo in recentPhotos.Take(6))
+                            {
+                                <div class="col-md-4">
+                                    <div class="recent-photo-card">
+                                        <img src="@photo.ImageUrl" alt="@photo.Title" />
+                                        <div class="recent-photo-info">
+                                            <h6>@photo.Title</h6>
+                                            <span class="badge bg-primary">@photo.EventType</span>
+                                            <button class="btn btn-sm btn-danger mt-2" @onclick="() => DeletePhoto(photo.Id)">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Photo newPhoto = new();
+    private List<Photo> recentPhotos = new();
+    private bool isUploading = false;
+    private bool showSuccessMessage = false;
+    private bool showImportDialog = false;
+    private string errorMessage = string.Empty;
+    private string uploadMethod = "file"; // "file" or "url"
+    private string previewUrl = string.Empty;
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRecentPhotos();
+    }
+
+    private async Task LoadRecentPhotos()
+    {
+        var allPhotos = await PhotoService.GetAllPhotosAsync();
+        recentPhotos = allPhotos.OrderByDescending(p => p.UploadedAt).ToList();
+    }
+
+    private async Task HandleFileSelected()
+    {
+        try
+        {
+            errorMessage = string.Empty;
+            previewUrl = string.Empty;
+
+            var base64 = await PhotoService.ConvertFileToBase64Async("photoFileInput");
+
+            if (!string.IsNullOrEmpty(base64))
+            {
+                newPhoto.ImageUrl = base64;
+                previewUrl = base64;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (uploadMethod == "url" && !string.IsNullOrEmpty(newPhoto.ImageUrl))
+        {
+            previewUrl = newPhoto.ImageUrl;
+        }
+    }
+
+    private async Task HandleUpload()
+    {
+        isUploading = true;
+        errorMessage = string.Empty;
+        showSuccessMessage = false;
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(newPhoto.Title))
+            {
+                errorMessage = "Please enter a photo title.";
+                isUploading = false;
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(newPhoto.EventType))
+            {
+                errorMessage = "Please select an event type.";
+                isUploading = false;
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(newPhoto.ImageUrl))
+            {
+                errorMessage = uploadMethod == "file" ? "Please select an image file." : "Please enter an image URL.";
+                isUploading = false;
+                return;
+            }
+
+            newPhoto.UploadedAt = DateTime.UtcNow;
+            await PhotoService.SavePhotoAsync(newPhoto);
+
+            showSuccessMessage = true;
+            newPhoto = new Photo();
+            previewUrl = string.Empty;
+            await LoadRecentPhotos();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            isUploading = false;
+        }
+    }
+
+    private async Task DeletePhoto(string photoId)
+    {
+        if (await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this photo?"))
+        {
+            await PhotoService.DeletePhotoAsync(photoId);
+            await LoadRecentPhotos();
+        }
+    }
+
+    private void HandleImageError()
+    {
+        errorMessage = "Failed to load image. Please check the URL or file.";
+        previewUrl = string.Empty;
+    }
+
+    private void ViewGallery()
+    {
+        Navigation.NavigateTo("/gallery");
+    }
+
+    private async Task ExportPhotos()
+    {
+        await JSRuntime.InvokeVoidAsync("exportPhotosToJson");
+    }
+
+    private async Task ImportPhotos()
+    {
+        try
+        {
+            var result = await JSRuntime.InvokeAsync<string>("importPhotosFromJson", "importFileInput");
+            showImportDialog = false;
+            await LoadRecentPhotos();
+            showSuccessMessage = true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Import failed: {ex.Message}";
+        }
+    }
+}

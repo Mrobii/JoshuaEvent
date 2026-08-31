@@ -1,0 +1,108 @@
+﻿@page "/"
+@using JoshuaEvents.Models
+@using JoshuaEvents.Services
+@inject ContactService ContactService
+
+<PageTitle>Joshua Events - Premier Event Decoration Services</PageTitle>
+
+<div class="home-container">
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="hero-logo-container">
+                <img src="images/joshua-logo.svg" alt="Joshua Events Logo" class="hero-logo" />
+            </div>
+            <h1 class="hero-title">JOSHUA EVENTS</h1>
+            <p class="hero-subtitle">CREATE • PLAN • CELEBRATE</p>
+            <p class="hero-motto">We Create Moments You'll Cherish Forever</p>
+            <p class="hero-description">
+                We specialize in creating stunning decorations for weddings, birthdays, corporate events, and all your special celebrations.
+            </p>
+            <div class="hero-contact mb-4">
+                <a href="tel:9036215569" class="hero-phone">
+                    <i class="bi bi-telephone-fill"></i> Call: 9036215569
+                </a>
+            </div>
+            <div class="hero-buttons">
+                <a href="/events" class="btn btn-primary btn-lg">Explore Our Services</a>
+                <a href="/contactus" class="btn btn-outline-light btn-lg">Get in Touch</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="services-section">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2>Our Event Services</h2>
+                <p class="lead">From intimate gatherings to grand celebrations, we bring your vision to life</p>
+            </div>
+
+            <div class="row g-4">
+                @foreach (var eventItem in events)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="event-card">
+                            <div class="event-image">
+                                <img src="@eventItem.ImageUrl" alt="@eventItem.Title" />
+                                <div class="event-category">@eventItem.Category</div>
+                            </div>
+                            <div class="event-content">
+                                <h3>@eventItem.Title</h3>
+                                <p>@eventItem.Description</p>
+                                <div class="event-price">Starting from ₹@eventItem.StartingPrice.ToString("N0")</div>
+                                <a href="/events" class="btn btn-primary w-100">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="why-choose-section">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2>Why Choose Joshua Events?</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-box text-center">
+                        <div class="feature-icon">🎨</div>
+                        <h4>Creative Designs</h4>
+                        <p>Unique and customized decoration themes tailored to your preferences</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-box text-center">
+                        <div class="feature-icon">⭐</div>
+                        <h4>Premium Quality</h4>
+                        <p>We use only the finest materials and decorations for your special day</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-box text-center">
+                        <div class="feature-icon">💯</div>
+                        <h4>Professional Team</h4>
+                        <p>Experienced decorators who ensure flawless execution of your event</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container text-center">
+            <h2 class="mb-4">Ready to Make Your Event Spectacular?</h2>
+            <p class="lead mb-4">Contact us today and let's create something amazing together!</p>
+            <a href="/contactus" class="btn btn-light btn-lg">Contact Us Now</a>
+        </div>
+    </section>
+</div>
+
+@code {
+    private List<Event> events = new();
+
+    protected override void OnInitialized()
+    {
+        events = ContactService.GetEvents();
+    }
+}

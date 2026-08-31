@@ -1,0 +1,148 @@
+@page "/gallery"
+
+<PageTitle>Gallery - Joshua Events</PageTitle>
+
+<div class="gallery-container">
+    <section class="page-header">
+        <div class="container">
+            <h1>Our Work Gallery</h1>
+            <p class="lead">Explore our recent events and decoration projects</p>
+        </div>
+    </section>
+
+    <div class="container my-5">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="filter-buttons text-center">
+                    <button class="btn @(activeFilter == "All" ? "btn-primary" : "btn-outline-primary") me-2" @onclick='() => FilterGallery("All")'>All</button>
+                    <button class="btn @(activeFilter == "Photos" ? "btn-primary" : "btn-outline-primary") me-2" @onclick='() => FilterGallery("Photos")'>Photos</button>
+                    <button class="btn @(activeFilter == "Videos" ? "btn-primary" : "btn-outline-primary") me-2" @onclick='() => FilterGallery("Videos")'>Videos</button>
+                </div>
+            </div>
+        </div>
+
+        @if (activeFilter == "All" || activeFilter == "Photos")
+        {
+            <h3 class="section-title mt-5 mb-4">Recent Event Photos</h3>
+            <div class="row g-3">
+                @foreach (var photo in galleryPhotos)
+                {
+                    <div class="col-md-4 col-sm-6">
+                        <div class="gallery-item">
+                            <img src="@photo.ImageUrl" alt="@photo.Title" class="gallery-image" />
+                            <div class="gallery-overlay">
+                                <div class="gallery-info">
+                                    <h5>@photo.Title</h5>
+                                    <p>@photo.Category</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (activeFilter == "All" || activeFilter == "Videos")
+        {
+            <h3 class="section-title mt-5 mb-4">Event Videos</h3>
+            <div class="row g-4">
+                @foreach (var video in galleryVideos)
+                {
+                    <div class="col-md-6">
+                        <div class="video-card">
+                            <div class="video-thumbnail">
+                                <img src="@video.ThumbnailUrl" alt="@video.Title" />
+                                <div class="play-button">
+                                    <i class="bi bi-play-circle-fill"></i>
+                                </div>
+                            </div>
+                            <div class="video-info">
+                                <h5>@video.Title</h5>
+                                <p>@video.Description</p>
+                                <span class="badge bg-primary">@video.Category</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <section class="gallery-cta">
+        <div class="container text-center">
+            <h3>Want to See Your Event Here?</h3>
+            <p>Let us create beautiful memories for your special occasion</p>
+            <a href="/contactus" class="btn btn-primary btn-lg">Get Started</a>
+        </div>
+    </section>
+</div>
+
+@code {
+    private string activeFilter = "All";
+
+    private class GalleryPhoto
+    {
+        public string Title { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+    }
+
+    private class GalleryVideo
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string ThumbnailUrl { get; set; } = string.Empty;
+        public string VideoUrl { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+    }
+
+    private List<GalleryPhoto> galleryPhotos = new()
+    {
+        new GalleryPhoto { Title = "Grand Wedding Mandap", ImageUrl = "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800", Category = "Wedding" },
+        new GalleryPhoto { Title = "Engagement Ceremony", ImageUrl = "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800", Category = "Engagement" },
+        new GalleryPhoto { Title = "Traditional Haldi Setup", ImageUrl = "https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800", Category = "Haldi" },
+        new GalleryPhoto { Title = "Birthday Party Decor", ImageUrl = "https://images.unsplash.com/photo-1464347744102-11db6282f854?w=800", Category = "Birthday" },
+        new GalleryPhoto { Title = "Baby Shower Decoration", ImageUrl = "https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?w=800", Category = "Baby Shower" },
+        new GalleryPhoto { Title = "Corporate Event Stage", ImageUrl = "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800", Category = "Corporate" },
+        new GalleryPhoto { Title = "Anniversary Celebration", ImageUrl = "https://images.unsplash.com/photo-1478146896981-b80fe463b330?w=800", Category = "Anniversary" },
+        new GalleryPhoto { Title = "Mehendi Function", ImageUrl = "https://images.unsplash.com/photo-1523438097201-512ae7d59c44?w=800", Category = "Mehendi" },
+        new GalleryPhoto { Title = "Kids Birthday Theme", ImageUrl = "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800", Category = "Birthday" },
+    };
+
+    private List<GalleryVideo> galleryVideos = new()
+    {
+        new GalleryVideo 
+        { 
+            Title = "Luxury Wedding Decoration",
+            Description = "Complete wedding decoration setup and execution",
+            ThumbnailUrl = "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800",
+            Category = "Wedding"
+        },
+        new GalleryVideo 
+        { 
+            Title = "Birthday Party Highlights",
+            Description = "Creative birthday party decoration with balloon arrangements",
+            ThumbnailUrl = "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800",
+            Category = "Birthday"
+        },
+        new GalleryVideo 
+        { 
+            Title = "Corporate Event Setup",
+            Description = "Professional corporate event decoration and branding",
+            ThumbnailUrl = "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800",
+            Category = "Corporate"
+        },
+        new GalleryVideo 
+        { 
+            Title = "Traditional Haldi Ceremony",
+            Description = "Colorful and vibrant haldi ceremony decoration",
+            ThumbnailUrl = "https://images.unsplash.com/photo-1519741497674-611481863552?w=800",
+            Category = "Haldi"
+        }
+    };
+
+    private void FilterGallery(string filter)
+    {
+        activeFilter = filter;
+    }
+}

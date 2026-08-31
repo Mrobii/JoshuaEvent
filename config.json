@@ -1,0 +1,46 @@
+{
+  "deployment": {
+    "platform": "GitHub Pages",
+    "instructions": [
+      "1. Push code to GitHub repository",
+      "2. Enable GitHub Pages in repository Settings → Pages",
+      "3. GitHub Actions will automatically build and deploy",
+      "4. Site will be live at: https://YOUR_USERNAME.github.io/JoshuaEvents"
+    ]
+  },
+  "basePathConfig": {
+    "localhost": "/",
+    "githubPages": "/JoshuaEvents/",
+    "customDomain": "/",
+    "note": "GitHub Actions automatically updates base href during deployment"
+  },
+  "photoStorage": {
+    "type": "localStorage",
+    "key": "joshuaevents_photos",
+    "maxFileSize": "5MB",
+    "format": "Base64 Data URLs",
+    "exportFormat": "JSON"
+  },
+  "features": {
+    "uploadMethods": ["file", "url"],
+    "exportData": true,
+    "importData": true,
+    "eventTypes": [
+      "Wedding",
+      "Engagement",
+      "Haldi",
+      "Cradle",
+      "Naming",
+      "Birthday",
+      "Corporate",
+      "Social",
+      "Anniversary",
+      "Mehendi"
+    ]
+  },
+  "contact": {
+    "phone": "9036215569",
+    "email": "info@joshuaevents.com",
+    "address": "Near Zion Methodist Church, Zion Colony, Kumbarwada Road, Bidar - 585403 (K.S)"
+  }
+}

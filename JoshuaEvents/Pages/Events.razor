@@ -1,0 +1,104 @@
+@page "/events"
+@using JoshuaEvents.Models
+@using JoshuaEvents.Services
+@inject ContactService ContactService
+
+<PageTitle>Our Services - Joshua Events</PageTitle>
+
+<div class="events-container">
+    <section class="page-header">
+        <div class="container">
+            <h1>Our Event Decoration Services</h1>
+            <p class="lead">Discover our comprehensive range of decoration services for every occasion</p>
+        </div>
+    </section>
+
+    <div class="container my-5">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="filter-buttons text-center">
+                    <button class="btn @(selectedCategory == "All" ? "btn-primary" : "btn-outline-primary") me-2 mb-2" @onclick='() => FilterByCategory("All")'>All Events</button>
+                    <button class="btn @(selectedCategory == "Wedding" ? "btn-primary" : "btn-outline-primary") me-2 mb-2" @onclick='() => FilterByCategory("Wedding")'>Weddings</button>
+                    <button class="btn @(selectedCategory == "Pre-Wedding" ? "btn-primary" : "btn-outline-primary") me-2 mb-2" @onclick='() => FilterByCategory("Pre-Wedding")'>Engagements</button>
+                    <button class="btn @(selectedCategory == "Birthday" ? "btn-primary" : "btn-outline-primary") me-2 mb-2" @onclick='() => FilterByCategory("Birthday")'>Birthdays</button>
+                    <button class="btn @(selectedCategory == "Baby" ? "btn-primary" : "btn-outline-primary") me-2 mb-2" @onclick='() => FilterByCategory("Baby")'>Baby Ceremonies</button>
+                    <button class="btn @(selectedCategory == "Corporate" ? "btn-primary" : "btn-outline-primary") me-2 mb-2" @onclick='() => FilterByCategory("Corporate")'>Corporate Events</button>
+                    <button class="btn @(selectedCategory == "Social" ? "btn-primary" : "btn-outline-primary") me-2 mb-2" @onclick='() => FilterByCategory("Social")'>Social Gatherings</button>
+                </div>
+            </div>
+        </div>
+
+        @foreach (var eventItem in filteredEvents)
+        {
+            <div class="event-detail-card mb-4">
+                <div class="row g-0">
+                    <div class="col-md-5">
+                        <img src="@eventItem.ImageUrl" alt="@eventItem.Title" class="event-detail-image" />
+                    </div>
+                    <div class="col-md-7">
+                        <div class="event-detail-content">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h3>@eventItem.Title</h3>
+                                <span class="badge bg-primary">@eventItem.Category</span>
+                            </div>
+                            <p class="event-description">@eventItem.Description</p>
+
+                            <h5 class="mt-4 mb-3">What We Offer:</h5>
+                            <ul class="features-list">
+                                @foreach (var feature in eventItem.Features)
+                                {
+                                    <li><i class="bi bi-check-circle-fill text-success"></i> @feature</li>
+                                }
+                            </ul>
+
+                            <div class="event-pricing mt-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="price-label">Starting Price:</span>
+                                        <span class="price-value">₹@eventItem.StartingPrice.ToString("N0")</span>
+                                    </div>
+                                    <a href="/contactus" class="btn btn-primary">Book Now</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (filteredEvents.Count == 0)
+        {
+            <div class="text-center py-5">
+                <p class="lead">No events found in this category.</p>
+            </div>
+        }
+    </div>
+
+    <section class="contact-banner">
+        <div class="container text-center">
+            <h3>Need a Custom Package?</h3>
+            <p>We can create personalized decoration packages tailored to your specific requirements and budget.</p>
+            <a href="/contactus" class="btn btn-light">Contact Us for Custom Quote</a>
+        </div>
+    </section>
+</div>
+
+@code {
+    private List<Event> allEvents = new();
+    private List<Event> filteredEvents = new();
+    private string selectedCategory = "All";
+
+    protected override void OnInitialized()
+    {
+        allEvents = ContactService.GetEvents();
+        filteredEvents = allEvents;
+    }
+
+    private void FilterByCategory(string category)
+    {
+        selectedCategory = category;
+        filteredEvents = category == "All" 
+            ? allEvents 
+            : allEvents.Where(e => e.Category == category).ToList();
+    }
+}
