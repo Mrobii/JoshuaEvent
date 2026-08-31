@@ -42,6 +42,35 @@ jobs:
     - name: Add .nojekyll file
       run: touch release/wwwroot/.nojekyll
 
+    # Copy 404.html for SPA routing (it should already be there from wwwroot)
+    - name: Verify 404.html exists
+      run: |
+        if [ ! -f release/wwwroot/404.html ]; then
+          echo "404.html not found, creating it"
+          cat > release/wwwroot/404.html << 'EOF'
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="utf-8" />
+            <title>Joshua Events</title>
+            <script>
+                var pathSegmentsToKeep = 1;
+                var l = window.location;
+                l.replace(
+                    l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+                    l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
+                    l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+                    (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+                    l.hash
+                );
+            </script>
+        </head>
+        <body>
+        </body>
+        </html>
+        EOF
+        fi
+
     # Upload artifact for GitHub Pages
     - name: Upload GitHub Pages artifact
       uses: actions/upload-pages-artifact@v3
