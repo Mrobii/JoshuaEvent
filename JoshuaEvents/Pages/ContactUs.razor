@@ -1,10 +1,4 @@
 @page "/contactus"
-@using JoshuaEvents.Models
-@using JoshuaEvents.Services
-@using System.Text
-@using System.Text.Json
-@inject ContactService ContactService
-@inject HttpClient Http
 
 <PageTitle>Contact Us - Joshua Events</PageTitle>
 
@@ -142,6 +136,24 @@
                                 placeholder="Tell us about your event requirements, date, location, number of guests, etc." />
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label">Upload Event Reference Image (Optional)</label>
+                            <InputFile OnChange="HandleFileSelected" class="form-control" accept=".jpg,.jpeg,.png,.gif" />
+                            <small class="form-text text-muted">
+                                Upload an image for reference (Max 5MB, JPG/PNG/GIF)
+                            </small>
+
+                            @if (!string.IsNullOrEmpty(imagePreviewUrl))
+                            {
+                                <div class="mt-3 position-relative" style="max-width: 300px;">
+                                    <img src="@imagePreviewUrl" alt="Preview" class="img-thumbnail" style="max-width: 100%;" />
+                                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" @onclick="ClearImage">
+                                        <i class="bi bi-x"></i> Remove
+                                    </button>
+                                </div>
+                            }
+                        </div>
+
                         <button type="submit" class="btn btn-primary w-100" disabled="@isSubmitting">
                             @if (isSubmitting)
                             {
@@ -159,86 +171,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    private ContactQuery contactQuery = new();
-    private bool isSubmitting = false;
-    private bool showSuccessMessage = false;
-    private string errorMessage = string.Empty;
-
-    private async Task HandleSubmit()
-    {
-        isSubmitting = true;
-        errorMessage = string.Empty;
-        showSuccessMessage = false;
-
-        try
-        {
-            if (string.IsNullOrWhiteSpace(contactQuery.Name) ||
-                string.IsNullOrWhiteSpace(contactQuery.Email) ||
-                string.IsNullOrWhiteSpace(contactQuery.Phone) ||
-                string.IsNullOrWhiteSpace(contactQuery.EventType))
-            {
-                errorMessage = "Please fill in all required fields.";
-                isSubmitting = false;
-                return;
-            }
-
-            contactQuery.SubmittedAt = DateTime.UtcNow;
-
-            // Save to local storage
-            await ContactService.SaveQueryAsync(contactQuery);
-
-            // Send email notification using EmailJS
-            await SendEmailNotification();
-
-            showSuccessMessage = true;
-            contactQuery = new ContactQuery();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = "An error occurred while submitting your inquiry. Please try again.";
-        }
-        finally
-        {
-            isSubmitting = false;
-        }
-    }
-
-    private async Task SendEmailNotification()
-    {
-        try
-        {
-            // Using Web3Forms - Free, no setup required
-            var formData = new Dictionary<string, string>
-            {
-                { "access_key", "081e2980-fb6d-4abd-a432-2fe4e391e883" }, // Your Web3Forms access key
-                { "subject", $"New Enquiry from {contactQuery.Name} - Joshua Events" },
-                { "from_name", contactQuery.Name },
-                { "email", "imobi4u@gmail.com" }, // Your email where you'll receive notifications
-                { "Customer_Name", contactQuery.Name },
-                { "Customer_Email", contactQuery.Email },
-                { "Customer_Phone", contactQuery.Phone },
-                { "Event_Type", contactQuery.EventType },
-                { "Event_Date", contactQuery.EventDate?.ToString("dd MMM yyyy") ?? "Not specified" },
-                { "Guest_Count", contactQuery.GuestCount > 0 ? contactQuery.GuestCount.ToString() : "Not specified" },
-                { "Budget", contactQuery.Budget > 0 ? $"₹{contactQuery.Budget:N0}" : "Not specified" },
-                { "Message", contactQuery.Message ?? "No additional message" }
-            };
-
-            var content = new FormUrlEncodedContent(formData);
-            var response = await Http.PostAsync("https://api.web3forms.com/submit", content);
-
-            // Log success/failure (optional)
-            if (response.IsSuccessStatusCode)
-            {
-                System.Diagnostics.Debug.WriteLine("Email sent successfully!");
-            }
-        }
-        catch
-        {
-            // Email sending failed but form is still saved locally
-            // Don't show error to user as the main function (saving query) succeeded
-        }
-    }
-}

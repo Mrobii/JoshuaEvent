@@ -12,4 +12,6 @@ public class ContactQuery
     public decimal Budget { get; set; }
     public string Message { get; set; } = string.Empty;
     public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
+    public string? AttachmentBase64 { get; set; }
+    public string? AttachmentFileName { get; set; }
 }
