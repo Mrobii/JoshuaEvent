@@ -37,7 +37,7 @@ jobs:
 
       - name: Update base tag
         run: |
-          sed -i 's|<base href="/JoshuaEvent/" />|<base href="/JoshuaEvent/" />|g' publish/wwwroot/index.html
+          sed -i 's|<base href="/JoshuaEvent-s/" />|<base href="/JoshuaEvent-s/" />|g' publish/wwwroot/index.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
