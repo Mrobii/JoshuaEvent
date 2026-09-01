@@ -1,9 +1,7 @@
-name: Deploy to GitHub Pages
+name: Deploy to GitHub Pages (DISABLED)
 
-# Run workflow on every push to the master branch
+# Disabled - using deploy.yml instead
 on:
-  push:
-    branches: [ master ]
   workflow_dispatch:
 
 jobs:

@@ -37,23 +37,51 @@ jobs:
 
       - name: Update base tag for GitHub Pages
         run: |
-          sed -i 's|<base href="/" />|<base href="/JoshuaEvent-s/" />|g' publish/wwwroot/index.html
+          # Find the actual index.html location and update it
+          if [ -f publish/wwwroot/wwwroot/JoshuaEvent-s/index.html ]; then
+            echo "Found index.html in publish/wwwroot/wwwroot/JoshuaEvent-s/"
+            sed -i 's|<base href="/" />|<base href="/JoshuaEvent/" />|g' publish/wwwroot/wwwroot/JoshuaEvent-s/index.html
+          elif [ -f publish/wwwroot/index.html ]; then
+            echo "Found index.html in publish/wwwroot/"
+            sed -i 's|<base href="/" />|<base href="/JoshuaEvent/" />|g' publish/wwwroot/index.html
+          else
+            echo "ERROR: Cannot find index.html"
+            exit 1
+          fi
 
       - name: Verify base tag update
         run: |
-          echo "Checking if base tag was updated correctly:"
-          grep '<base href="/JoshuaEvent-s/" />' publish/wwwroot/index.html || echo "ERROR: Base tag not updated!"
-          echo "Listing key files:"
-          ls -la publish/wwwroot/ | head -20
-          echo "Checking for CSS files:"
-          ls -la publish/wwwroot/css/ || echo "No css folder"
-          echo "Checking for framework files:"
-          ls -la publish/wwwroot/_framework/ | head -10
+          echo "Checking publish structure:"
+          ls -la publish/wwwroot/ | head -15
+          echo ""
+          echo "Checking for nested wwwroot:"
+          ls -la publish/wwwroot/wwwroot/ || echo "No nested wwwroot"
+          echo ""
+          echo "Looking for actual files location:"
+          find publish/wwwroot -name "blazor.webassembly*.js" -o -name "app.css" | head -5
+          echo ""
+          echo "Verifying base tag was updated to /JoshuaEvent/:"
+          grep '<base href="/JoshuaEvent/" />' publish/wwwroot/index.html 2>/dev/null || grep '<base href="/JoshuaEvent/" />' publish/wwwroot/wwwroot/JoshuaEvent-s/index.html 2>/dev/null || echo "ERROR: Base tag not found!"
+
+      - name: Determine upload path
+        id: upload-path
+        run: |
+          if [ -d publish/wwwroot/wwwroot/JoshuaEvent-s ]; then
+            echo "path=publish/wwwroot/wwwroot/JoshuaEvent-s" >> $GITHUB_OUTPUT
+            echo "Uploading from: publish/wwwroot/wwwroot/JoshuaEvent-s"
+          elif [ -d publish/wwwroot/_framework ]; then
+            echo "path=publish/wwwroot" >> $GITHUB_OUTPUT
+            echo "Uploading from: publish/wwwroot"
+          else
+            echo "ERROR: Cannot find published files"
+            ls -la publish/wwwroot
+            exit 1
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./publish/wwwroot
+          path: ${{ steps.upload-path.outputs.path }}
 
   deploy:
     environment:
