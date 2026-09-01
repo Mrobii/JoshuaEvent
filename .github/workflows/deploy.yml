@@ -37,12 +37,12 @@ jobs:
 
       - name: Update base tag for GitHub Pages
         run: |
-          sed -i 's|<base href="/" />|<base href="/JoshuaEvent/" />|g' publish/wwwroot/index.html
+          sed -i 's|<base href="/" />|<base href="/JoshuaEvent-s/" />|g' publish/wwwroot/index.html
 
       - name: Verify base tag update
         run: |
           echo "Checking if base tag was updated correctly:"
-          grep '<base href="/JoshuaEvent/" />' publish/wwwroot/index.html || echo "ERROR: Base tag not updated!"
+          grep '<base href="/JoshuaEvent-s/" />' publish/wwwroot/index.html || echo "ERROR: Base tag not updated!"
           echo "Listing key files:"
           ls -la publish/wwwroot/ | head -20
           echo "Checking for CSS files:"
