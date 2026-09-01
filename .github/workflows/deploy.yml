@@ -39,6 +39,14 @@ jobs:
         run: |
           sed -i 's|<base href="/" />|<base href="/JoshuaEvent/" />|g' publish/wwwroot/index.html
 
+      - name: Verify base tag update
+        run: |
+          echo "Checking if base tag was updated correctly:"
+          grep '<base href="/JoshuaEvent/" />' publish/wwwroot/index.html || echo "ERROR: Base tag not updated!"
+          echo "Listing key files:"
+          ls -la publish/wwwroot/ | head -20
+          ls -la publish/wwwroot/_framework/ | head -10
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
