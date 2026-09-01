@@ -80,9 +80,21 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./publish/wwwroot
+          retention-days: 1
+        env:
+          # Ensure underscore folders are included
+          RUNNER_TEMP: ${{ runner.temp }}
 
       - name: List uploaded artifact contents
         run: |
+          echo "=== Verifying what will be deployed ==="
+          echo "Artifact should contain _framework folder with $(find publish/wwwroot/_framework -type f | wc -l) files"
+          echo ""
+          echo "=== Directory structure to be deployed ==="
+          tree -L 2 publish/wwwroot/ || find publish/wwwroot/ -maxdepth 2 -type d
+          echo ""
+          echo "=== Checking if _framework will be preserved ==="
+          ls -la publish/wwwroot/ | grep "_framework" && echo "? _framework folder present" || echo "? _framework folder missing!"
           echo "=== Verifying what will be deployed ==="
           echo "Artifact should contain _framework folder with $(find publish/wwwroot/_framework -type f | wc -l) files"
 
@@ -96,3 +108,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages
