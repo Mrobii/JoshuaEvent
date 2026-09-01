@@ -37,20 +37,23 @@ jobs:
 
       - name: Update base tag for GitHub Pages
         run: |
-          sed -i 's|<base href="/" />|<base href="/JoshuaEvent/" />|g' publish/wwwroot/JoshuaEvent/index.html
+          sed -i 's|<base href="/" />|<base href="/JoshuaEvent/" />|g' publish/wwwroot/index.html
 
       - name: Verify base tag update
         run: |
           echo "Checking if base tag was updated correctly:"
-          grep '<base href="/JoshuaEvent/" />' publish/wwwroot/JoshuaEvent/index.html || echo "ERROR: Base tag not updated!"
+          grep '<base href="/JoshuaEvent/" />' publish/wwwroot/index.html || echo "ERROR: Base tag not updated!"
           echo "Listing key files:"
-          ls -la publish/wwwroot/JoshuaEvent/ | head -20
-          ls -la publish/wwwroot/JoshuaEvent/_framework/ | head -10
+          ls -la publish/wwwroot/ | head -20
+          echo "Checking for CSS files:"
+          ls -la publish/wwwroot/css/ || echo "No css folder"
+          echo "Checking for framework files:"
+          ls -la publish/wwwroot/_framework/ | head -10
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./publish/wwwroot/JoshuaEvent
+          path: ./publish/wwwroot
 
   deploy:
     environment:
