@@ -44,12 +44,22 @@ jobs:
           echo "=== Files in publish/wwwroot ==="
           ls -la publish/wwwroot/ | head -20
           echo ""
-          echo "=== Checking key files exist ==="
-          ls -la publish/wwwroot/_framework/ | head -10
+          echo "=== Checking _framework folder ==="
+          echo "Total files in _framework: $(find publish/wwwroot/_framework -type f | wc -l)"
+          echo "Sample _framework files:"
+          ls -la publish/wwwroot/_framework/ | head -15
+          echo ""
+          echo "=== Checking for blazor files ==="
+          find publish/wwwroot/_framework -name "blazor*" -ls
+          echo ""
+          echo "=== Checking key CSS files ==="
           ls -la publish/wwwroot/css/
           echo ""
           echo "=== Verifying base tag ===" 
           grep '<base href="/JoshuaEvent/" />' publish/wwwroot/index.html && echo "? Base tag updated correctly" || echo "? ERROR: Base tag not updated!"
+          echo ""
+          echo "=== Total size of wwwroot ==="
+          du -sh publish/wwwroot/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
