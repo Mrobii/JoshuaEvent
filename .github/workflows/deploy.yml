@@ -39,32 +39,52 @@ jobs:
         run: |
           sed -i 's|<base href="/" />|<base href="/JoshuaEvent/" />|g' publish/wwwroot/index.html
 
+      - name: Ensure .nojekyll exists
+        run: |
+          touch publish/wwwroot/.nojekyll
+          echo "? .nojekyll file created/verified"
+
       - name: Verify deployment files
         run: |
           echo "=== Files in publish/wwwroot ==="
           ls -la publish/wwwroot/ | head -20
           echo ""
           echo "=== Checking _framework folder ==="
-          echo "Total files in _framework: $(find publish/wwwroot/_framework -type f | wc -l)"
-          echo "Sample _framework files:"
-          ls -la publish/wwwroot/_framework/ | head -15
+          if [ -d "publish/wwwroot/_framework" ]; then
+            echo "? _framework folder exists"
+            echo "Total files in _framework: $(find publish/wwwroot/_framework -type f | wc -l)"
+            echo "Sample _framework files:"
+            ls -la publish/wwwroot/_framework/ | head -15
+          else
+            echo "? ERROR: _framework folder does NOT exist!"
+            exit 1
+          fi
           echo ""
           echo "=== Checking for blazor files ==="
-          find publish/wwwroot/_framework -name "blazor*" -ls
+          find publish/wwwroot/_framework -name "blazor*" -type f || echo "No blazor files found!"
           echo ""
-          echo "=== Checking key CSS files ==="
-          ls -la publish/wwwroot/css/
-          echo ""
-          echo "=== Verifying base tag ===" 
-          grep '<base href="/JoshuaEvent/" />' publish/wwwroot/index.html && echo "? Base tag updated correctly" || echo "? ERROR: Base tag not updated!"
+          echo "=== Verifying .nojekyll ==="
+          if [ -f "publish/wwwroot/.nojekyll" ]; then
+            echo "? .nojekyll exists at root"
+          else
+            echo "? WARNING: .nojekyll missing!"
+          fi
           echo ""
           echo "=== Total size of wwwroot ==="
           du -sh publish/wwwroot/
+          echo ""
+          echo "=== Size of _framework ==="
+          du -sh publish/wwwroot/_framework/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./publish/wwwroot
+
+      - name: List uploaded artifact contents
+        run: |
+          echo "=== Verifying what will be deployed ==="
+          echo "Artifact should contain _framework folder with $(find publish/wwwroot/_framework -type f | wc -l) files"
 
   deploy:
     environment:
