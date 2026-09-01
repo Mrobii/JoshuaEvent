@@ -76,6 +76,11 @@ jobs:
           echo "=== Size of _framework ==="
           du -sh publish/wwwroot/_framework/
 
+      - name: Fix permissions for artifact upload
+        run: |
+          chmod -R +r publish/wwwroot
+          find publish/wwwroot -type d -exec chmod +rx {} \;
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
