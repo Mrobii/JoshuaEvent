@@ -35,9 +35,9 @@ jobs:
       - name: Publish
         run: dotnet publish JoshuaEvents/JoshuaEvents.csproj -c Release -o publish --no-build
 
-      - name: Update base tag
+      - name: Update base tag for GitHub Pages
         run: |
-          sed -i 's|<base href="/JoshuaEvent-s/" />|<base href="/JoshuaEvent-s/" />|g' publish/wwwroot/index.html
+          sed -i 's|<base href="/" />|<base href="/JoshuaEvent-s/" />|g' publish/wwwroot/index.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
